@@ -66,9 +66,36 @@ server.get('/login/username=:username&password=:password', function(req, res, ne
     console.log('error: ', err);
     }); 
 });
-// End Login API
+// call-Exercise API
+server.get('/getExercise/username=:username', function(req, res, next) {
 
+    const username =    [{ user: 
+                            {
+                                type: 'literal',
+                                value: req.params.username
+                            }
+                        }];    
 
+    var lastestEx = {};  
+        
+    query.execute(conn, 'scratchthai', 
+    'select ?exerciseLink where { ?s a scth:Learner. ?s scth:hasLearnerPersonalInformation ?info. ?info scth:Username ?user. ?s scth:hasPractice ?practice. ?practice a scth:Practice. ?practice scth:SubmittedDate ?Date. ?lo a scth:LearningObject. 	?lo scth:isUsed ?practice. ?lo scth:hasLearningObjectType ?exercise. ?exercise a scth:Exercise. ?exercise scth:Address ?exerciseLink. } ORDER BY desc(?Date)',
+    'application/sparql-results+json')
+    .then( (exData) => {    // **check username first
+                            const exercise = exData.body.results.bindings; 
+
+                            for(var i=0; i<exercise.length; i++) {
+                                // use the first data
+                                lastestEx = exercise[0].exerciseLink;
+
+                            }
+                            res.send(lastestEx); 
+                        }) 
+    .catch(function(err) {
+    console.log('error: ', err);
+    }); 
+});
+// End call-Exercise API
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
