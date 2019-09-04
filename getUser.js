@@ -77,17 +77,20 @@ server.get('/getExercise/username=:username', function(req, res, next) {
                         }];    
 
     var lastestEx = {};  
-        
+    const findUsername = JsonFind(username);
+
     query.execute(conn, 'scratchthai', 
-    'select ?exerciseLink where { ?s a scth:Learner. ?s scth:hasLearnerPersonalInformation ?info. ?info scth:Username ?user. ?s scth:hasPractice ?practice. ?practice a scth:Practice. ?practice scth:SubmittedDate ?Date. ?lo a scth:LearningObject. 	?lo scth:isUsed ?practice. ?lo scth:hasLearningObjectType ?exercise. ?exercise a scth:Exercise. ?exercise scth:Address ?exerciseLink. } ORDER BY desc(?Date)',
+    'select ?user ?exerciseLink where { ?s a scth:Learner. ?s scth:hasLearnerPersonalInformation ?info. ?info scth:Username ?user. ?s scth:hasPractice ?practice. ?practice a scth:Practice. ?practice scth:SubmittedDate ?Date. ?lo a scth:LearningObject. 	?lo scth:isUsed ?practice. ?lo scth:hasLearningObjectType ?exercise. ?exercise a scth:Exercise. ?exercise scth:Address ?exerciseLink. } ORDER BY desc(?Date)',
     'application/sparql-results+json')
     .then( (exData) => {    // **check username first
-                            const exercise = exData.body.results.bindings; 
 
-                            for(var i=0; i<exercise.length; i++) {
-                                // use the first data
-                                lastestEx = exercise[0].exerciseLink;
+                            const data = exData.body.results.bindings; 
+                            const ownerEx = findUsername.findValues('value');
 
+                            for(var i=0; i<data.length; i++) {
+                                if (data[i].user.value == ownerEx.value) { //check username
+                                        lastestEx = data[0].exerciseLink; // use the first data
+                                    }                                
                             }
                             res.send(lastestEx); 
                         }) 
