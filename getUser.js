@@ -83,7 +83,6 @@ server.get('/getExercise/username=:username', function(req, res, next) {
     'select ?user ?exerciseLink where { ?s a scth:Learner. ?s scth:hasLearnerPersonalInformation ?info. ?info scth:Username ?user. ?s scth:hasPractice ?practice. ?practice a scth:Practice. ?practice scth:SubmittedDate ?Date. ?lo a scth:LearningObject. 	?lo scth:isUsed ?practice. ?lo scth:hasLearningObjectType ?exercise. ?exercise a scth:Exercise. ?exercise scth:Address ?exerciseLink. } ORDER BY desc(?Date)',
     'application/sparql-results+json')
     .then( (exData) => {    // **check username first
-
                             const data = exData.body.results.bindings; 
                             const ownerEx = findUsername.findValues('value');
 
@@ -99,6 +98,47 @@ server.get('/getExercise/username=:username', function(req, res, next) {
     }); 
 });
 // End call-Exercise API
+
+// Assessment API
+server.get('/getAssessment/username=:username&exerciseID=:exerciseid', function(req, res, next) {
+
+    const username =    [{ user: 
+                            {
+                                type: 'literal',
+                                value: req.params.username
+                            }
+                        }];
+    
+    const exercise =    [{ exID: 
+                            {
+                                type: 'literal',
+                                value: req.params.exerciseid
+                            }
+                        }]; 
+
+    var assestResult = false;  // default result is false
+    const getUsername = JsonFind(username);
+    const getExID = JsonFind(exercise);
+
+    query.execute(conn, 'scratchthai', 
+    'select ?user ?exerciseLink where { ?s a scth:Learner. ?s scth:hasLearnerPersonalInformation ?info. ?info scth:Username ?user. ?s scth:hasPractice ?practice. ?practice a scth:Practice. ?practice scth:SubmittedDate ?Date. ?lo a scth:LearningObject. 	?lo scth:isUsed ?practice. ?lo scth:hasLearningObjectType ?exercise. ?exercise a scth:Exercise. ?exercise scth:Address ?exerciseLink. } ORDER BY desc(?Date)',
+    'application/sparql-results+json')
+    .then( (exData) => {    // **check username first
+                            const data = exData.body.results.bindings; 
+                            const ownerEx = findUsername.findValues('value');
+
+                            for(var i=0; i<data.length; i++) {
+                                if (data[i].user.value == ownerEx.value) { //check username
+                                        lastestEx = data[0].exerciseLink; // use the first data
+                                    }                                
+                            }
+                            res.send(lastestEx); 
+                        }) 
+    .catch(function(err) {
+    console.log('error: ', err);
+    }); 
+});
+// end Assessment API
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
