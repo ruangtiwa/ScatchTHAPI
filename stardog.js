@@ -1,5 +1,15 @@
 const { Connection, query } = require('stardog');
 
+const Stardog = require('stardog-js');
+const stardog = new Stardog({
+  endpoint: 'http://localhost:5820',
+  database: 'scratchthai',
+  auth: {
+      user: 'admin',
+      pass: 'admin'
+  }
+});
+
 const JsonFind = require('json-find');
  
 const conn = new Connection({
@@ -8,7 +18,7 @@ const conn = new Connection({
   endpoint: 'http://localhost:5820',
 });
 const user1 = "ruangtiwa";
-const pass1 = "1234";
+const pass1 = "5678";
 var username = [{ user: 
                   {
                     type: 'literal',
@@ -35,24 +45,35 @@ query.execute(conn, 'scratchthai',
                         const getUsername = docUsername.findValues('value');
                         const getPassword = docPassword.findValues('value');
                         // var equal = false;
+
+                        
+
+
+
                         
                         for(var i=0; i<allData.length; i++) {  
 
-                            if (allData[i].user.value == getUsername.value) { //check username
-                                console.log(allData[i].user.value)
-                                console.log('Existing username')
-                                if (allData[i].pass.value == getPassword.value) { // check password
-                                    console.log(allData[i].pass.value)
-                                    console.log('Existing username&password')
-                                    equal = true;
-                                }
-                            }
+                            // if (allData[i].user.value == getUsername.value) { //check username
+                            //     console.log(allData[i].user.value)
+                            //     console.log('Existing username')
+                            //     if (allData[i].pass.value == getPassword.value) { // check password
+                            //         console.log(allData[i].pass.value)
+                            //         console.log('Existing username&password')
+                            //         equal = true;
+                            //     }
+                            // }
+                            stardog.addGraph({
+                              
+                              from: allData[0].pass.value,
+                              to: getPassword })
+                            .catch(function(err) {
+                              console.log('error: ', err);
+                            });
 
-                            // console.log(obj1[i].user.value);
+                            console.log(allData[0].pass.value);
                             // console.log(obj2.value);
                         }
-                        console.log(equal);
-                        // console.log(allData);
+                      //  console.log(allData.body.results.bindings);
                         // console.log(getUsername);
                         // console.log(getPassword);
                         // console.log(data2.body.results.bindings);
@@ -61,4 +82,8 @@ query.execute(conn, 'scratchthai',
   console.log('error: ', err);
 });
 
+// stardog.addGraph({
+//   from: allData[0].pass.value,
+//   to: getPassword
+// });
 // console.log(comma+username+comma);
