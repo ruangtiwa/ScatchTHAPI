@@ -1,0 +1,9 @@
+// get all users
+SELECT * FROM securitykey
+
+// get lastest exercise 
+SELECT o.learningObject_id , o.title , o.technicalLocation FROM activity a 
+INNER JOIN learningobject o ON a.activity_id = o.activity_id
+INNER JOIN learnerinformation l ON l.learnerInformation_id = a.learnerInfo_id 
+INNER JOIN securitykey s ON s.learnerInfo_id = l.learnerInformation_id AND s.username = 'st001'
+ORDER BY a.date DESC
