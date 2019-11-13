@@ -13,7 +13,7 @@ const conn = new Connection({
   endpoint: 'http://localhost:5820',
 });
 
-// Loging API
+// Loging API;
 server.get('/login/username=:username&password=:password', function(req, res, next) {
 
     const username =    [{ user: 
