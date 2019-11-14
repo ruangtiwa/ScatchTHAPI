@@ -7,3 +7,33 @@ INNER JOIN learningobject o ON a.activity_id = o.activity_id
 INNER JOIN learnerinformation l ON l.learnerInformation_id = a.learnerInfo_id 
 INNER JOIN securitykey s ON s.learnerInfo_id = l.learnerInformation_id AND s.username = 'st001'
 ORDER BY a.date DESC
+
+// all 
+SELECT lo.learningObject_id FROM lp_comp lc
+INNER JOIN learningobject lo ON  lc.lc_id = lo.lpComp_id
+INNER JOIN lp_lc pc ON lc.lc_id = pc.lc_id
+INNER JOIN lessonplan lp ON pc.lp_id = lp.lessonPlan_id
+INNER JOIN learnerinformation ln ON lp.lessonPlan_id = ln.lessonplan_id
+
+// get fol_id
+SELECT pc.fol_id FROM lp_comp lc
+INNER JOIN learningobject lo ON  lc.lc_id = lo.lpComp_id
+INNER JOIN lp_lc pc ON lc.lc_id = pc.lc_id
+INNER JOIN lessonplan lp ON pc.lp_id = lp.lessonPlan_id
+INNER JOIN learnerinformation ln ON lp.lessonPlan_id = ln.lessonplan_id
+WHERE lo.learningObject_id = 1
+
+// ของจริง
+SELECT * FROM learningobject lo 
+INNER JOIN lp_comp lc ON lo.lpComp_id = lc.lc_id
+WHERE lc.lc_id IN
+(SELECT pc.lc_id FROM lp_lc pc WHERE pc.lplc_id IN
+	(SELECT pc.fol_id FROM lp_comp lc
+        INNER JOIN learningobject lo ON  lc.lc_id = lo.lpComp_id
+        INNER JOIN lp_lc pc ON lc.lc_id = pc.lc_id
+        INNER JOIN lessonplan lp ON pc.lp_id = lp.lessonPlan_id
+        INNER JOIN learnerinformation ln ON lp.lessonPlan_id = ln.lessonplan_id
+        INNER JOIN securitykey s ON s.learnerInfo_id = ln.learnerInformation_id AND s.username = 'st001'
+        WHERE  lo.learningObject_id = 1) )
+
+SELECT * FROM learningobject lo INNER JOIN lp_comp lc ON lo.lpComp_id = lc.lc_id WHERE lc.lc_id IN (SELECT pc.lc_id FROM lp_lc pc WHERE pc.lplc_id IN (SELECT pc.fol_id FROM lp_comp lc INNER JOIN learningobject lo ON  lc.lc_id = lo.lpComp_id INNER JOIN lp_lc pc ON lc.lc_id = pc.lc_id INNER JOIN lessonplan lp ON pc.lp_id = lp.lessonPlan_id INNER JOIN learnerinformation ln ON lp.lessonPlan_id = ln.lessonplan_id INNER JOIN securitykey s ON s.learnerInfo_id = ln.learnerInformation_id) )
