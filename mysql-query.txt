@@ -25,7 +25,7 @@ WHERE lo.learningObject_id = 1
 
 // ของจริง
 SELECT * FROM learningobject lo 
-INNER JOIN lp_comp lc ON lo.lpComp_id = lc.lc_id
+INNER JOIN lp_comp lc ON lo.lpComp_id = lc.lc_id //join lo and lc
 WHERE lc.lc_id IN
 (SELECT pc.lc_id FROM lp_lc pc WHERE pc.lplc_id IN
 	(SELECT pc.fol_id FROM lp_comp lc

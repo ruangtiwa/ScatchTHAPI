@@ -77,14 +77,19 @@ app.get('/get-exercise/username=:username',(req,res)=> {   // Router เวล�
 
 //give next exercise
 app.get('/next-exercise/username=:username',(req,res)=> {   // Router เวลาเรียกใช้งาน
-
+    var data = '';
     const getUsername =    req.params.username ;
-    const last = '';
-    const nextEx =   {
-                            id: '',
-                            title: '',
-                            ref: ''
-                        };
+    var last =    {
+                        id: '',
+                        title: '',
+                        ref: '',
+                        status: ''
+                    };
+    const nextEx =  {
+                        id: '',
+                        title: '',
+                        ref: ''
+                    };
     // call last exercise
     var request = http.request({
         host: 'localhost',
@@ -95,38 +100,51 @@ app.get('/next-exercise/username=:username',(req,res)=> {   // Router เวล�
         //   // headers such as "Cookie" can be extracted from req object and sent to /test
         // }
       }, function(response) {
-        var data = '';
+        
+        // console.log("oo0");
         response.setEncoding('utf8');
+        // console.log("oo1");
         response.on('data', (chunk) => {
-          data += chunk;
+            // console.log("oo2");
+            data += chunk;
         });
         response.on('end', () => {
-          res.end(data);
+            res.end(data);
         });
-        console.log(data);
+
+        // for(var i=0; i<data.length; i++) {  
+        //     console.log(data[i].id);
+        //         // last.id = data[0].id; // use first LO_id
+        //         // last.title = data[0].title; // use first LO_title
+        //         // last.ref = data[0].ref; // use first LO_technicalLocation
+        //         // last.status = data[0].status;
+        // }
+
+        // console.log("oo");
+        // console.log(last);
     });
     request.end(); 
     // end call last exercise
 
-    let sql = 'SELECT * FROM learningobject lo INNER JOIN lp_comp lc ON lo.lpComp_id = lc.lc_id WHERE lc.lc_id IN (SELECT pc.lc_id FROM lp_lc pc WHERE pc.lplc_id IN (SELECT pc.fol_id FROM lp_comp lc INNER JOIN learningobject lo ON  lc.lc_id = lo.lpComp_id INNER JOIN lp_lc pc ON lc.lc_id = pc.lc_id INNER JOIN lessonplan lp ON pc.lp_id = lp.lessonPlan_id INNER JOIN learnerinformation ln ON lp.lessonPlan_id = ln.lessonplan_id INNER JOIN securitykey s ON s.learnerInfo_id = ln.learnerInformation_id) )'  // คำสั่ง sql
+    let sql = 'SELECT lo.learningObject_id , lo.title , lo.technicalLocation FROM learningobject lo INNER JOIN lp_comp lc ON lo.lpComp_id = lc.lc_id WHERE lc.lc_id IN (SELECT pc.lc_id FROM lp_lc pc WHERE pc.lplc_id IN (SELECT pc.fol_id FROM lp_comp lc INNER JOIN learningobject lo ON  lc.lc_id = lo.lpComp_id INNER JOIN lp_lc pc ON lc.lc_id = pc.lc_id INNER JOIN lessonplan lp ON pc.lp_id = lp.lessonPlan_id INNER JOIN learnerinformation ln ON lp.lessonPlan_id = ln.lessonplan_id INNER JOIN securitykey s ON s.learnerInfo_id = ln.learnerInformation_id WHERE  lo.learningObject_id = 1) )'  // คำสั่ง sql
     let query = db.query(sql,(err,results) => { // สั่ง Query คำสั่ง sql
         if(err) throw err  // ดัก error
         
         
 
-        // for(var i=0; i<results.length; i++) {  
+        for(var i=0; i<results.length; i++) {  
 
             // if (results[i].username == getUsername) { //check username == getUsername
-                // lastestEx.id = results[0].learningObject_id; // use first LO_id
-                // lastestEx.title = results[0].title; // use first LO_title
-                // lastestEx.ref = results[0].technicalLocation; // use first LO_technicalLocation
-                // lastestEx.status = results[0].status;
+            nextEx.id = results[0].learningObject_id; // use first LO_id
+            nextEx.title = results[0].title; // use first LO_title
+            nextEx.ref = results[0].technicalLocation; // use first LO_technicalLocation
             // }
             // console.log(results[i].username);
             // console.log(getUsername);
-        // }
-        // console.log(results);
-        // res.json(lastestEx);
+        }
+        console.log(results);
+        console.log("----------------results---------------");
+        res.json(nextEx);
     })
 })
 
