@@ -2,6 +2,7 @@ const express = require('express') // เรียกใช้ Express
 const mysql = require('mysql') // เรียกใช้ mysql
 var http = require('http');
 
+
 const db = mysql.createConnection({   // config ค่าการเชื่อมต่อฐานข้อมูล
     host     : 'localhost', 
     user     : 'root',
@@ -9,8 +10,16 @@ const db = mysql.createConnection({   // config ค่าการเชื่�
     database : 'test'
 })
 
+
+
 db.connect() // เชื่อมต่อฐานข้อมูล
 const app = express() // สร้าง Object เก็บไว้ในตัวแปร app เพื่อนำไปใช้งาน
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 // Login API
 app.get('/login/username=:username&password=:password',(req,res)=> {   // Router เวลาเรียกใช้งาน
@@ -18,8 +27,8 @@ app.get('/login/username=:username&password=:password',(req,res)=> {   // Router
     const password =    req.params.password ;
     var equal = false; // if true 'username' is existing
 
-    let sql = 'SELECT * FROM securitykey'  // คำสั่ง sql
-    let query = db.query(sql,(err,results) => { // สั่ง Query คำสั่ง sql
+    let sql = `SELECT * FROM securitykey WHERE securitykey.username=? AND securitykey.password=?`;  // คำสั่ง sql
+    let query = db.query(sql, [username, password],(err,results) => { // สั่ง Query คำสั่ง sql
         if(err) throw err  // ดัก error
         // console.log(results) // แสดงผล บน Console 
         // res.json(results)   // สร้างผลลัพธ์เป็น JSON ส่งออกไปบน Browser
@@ -34,11 +43,11 @@ app.get('/login/username=:username&password=:password',(req,res)=> {   // Router
                     equal = true;
                 }
             }
-            // console.log(results[i].username);
+            console.log(results[i]);
             // console.log(username);
         }
-        // console.log(equal);
-        res.send(equal);
+        console.log(equal);
+        res.send(results[0]);
     })
 
     // console.log(username);
@@ -55,18 +64,18 @@ app.get('/get-exercise/username=:username',(req,res)=> {   // Router เวล�
                             status: ''
                         }; 
 
-    let sql = 'SELECT o.learningObject_id , o.title , o.technicalLocation , a.status , s.username FROM activity a INNER JOIN learningobject o ON a.activity_id = o.activity_id INNER JOIN learnerinformation l ON l.learnerInformation_id = a.learnerInfo_id INNER JOIN securitykey s ON s.learnerInfo_id = l.learnerInformation_id ORDER BY a.date DESC'  // คำสั่ง sql
-    let query = db.query(sql,(err,results) => { // สั่ง Query คำสั่ง sql
+    let sql = 'SELECT o.learningObject_id , o.title , o.technicalLocation , a.status , s.username FROM activity a INNER JOIN learningobject o ON a.activity_id = o.activity_id INNER JOIN learnerinformation l ON l.learnerInformation_id = a.learnerInfo_id INNER JOIN securitykey s ON s.learnerInfo_id = l.learnerInformation_id WHERE s.username=? ORDER BY a.date DESC'  // คำสั่ง sql
+    let query = db.query(sql,[getUsername] ,(err,results) => { // สั่ง Query คำสั่ง sql
         if(err) throw err  // ดัก error
         
         for(var i=0; i<results.length; i++) {  
 
-            if (results[i].username == getUsername) { //check username == getUsername
+            // if (results[i].username == getUsername) { //check username == getUsername
                 lastestEx.id = results[0].learningObject_id; // use first LO_id
                 lastestEx.title = results[0].title; // use first LO_title
                 lastestEx.ref = results[0].technicalLocation; // use first LO_technicalLocation
                 lastestEx.status = results[0].status;
-            }
+            // }
             // console.log(results[i].username);
             // console.log(getUsername);
         }
