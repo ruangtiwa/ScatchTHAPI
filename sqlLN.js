@@ -7,7 +7,7 @@ const db = mysql.createConnection({   // config ค่าการเชื่�
     host     : 'localhost', 
     user     : 'root',
     password : '',
-    database : 'test'
+    database : 'scratchthai'
 })
 
 
@@ -21,7 +21,7 @@ app.use(function(req, res, next) {
     next();
   });
 
-// Login API
+//------------------------------------Login API------------------------------------
 app.get('/login/username=:username&password=:password',(req,res)=> {   // Router เวลาเรียกใช้งาน
     const username =    req.params.username ;
     const password =    req.params.password ;
@@ -61,7 +61,7 @@ app.get('/login/username=:username&password=:password',(req,res)=> {   // Router
     // console.log(password);
 })
 
-//ask lastest-exercise
+//------------------------------------ask lastest-exercise------------------------------------
 app.get('/get-exercise/username=:username',(req,res)=> {   // Router เวลาเรียกใช้งาน
     const getUsername =    req.params.username ;
     const lastestEx =   {
@@ -89,7 +89,7 @@ app.get('/get-exercise/username=:username',(req,res)=> {   // Router เวล�
     })
 })
 
-//give next exercise
+//------------------------------------Give next exercise------------------------------------
 app.get('/next-exercise/username=:username',(req,res)=> {   // Router เวลาเรียกใช้งาน
     var data = '';
     let id;

@@ -23,7 +23,7 @@ INNER JOIN lessonplan lp ON pc.lp_id = lp.lessonPlan_id
 INNER JOIN learnerinformation ln ON lp.lessonPlan_id = ln.lessonplan_id
 WHERE lo.learningObject_id = 1
 
-// ของจริง
+// get learning object follow given id 
 SELECT * FROM learningobject lo 
 INNER JOIN lp_comp lc ON lo.lpComp_id = lc.lc_id //join lo and lc
 WHERE lc.lc_id IN
