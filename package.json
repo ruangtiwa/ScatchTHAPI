@@ -16,7 +16,7 @@
     "json-find": "^2.0.7",
     "mysql": "^2.17.1",
     "request": "^2.88.0",
-    "stardog": "^1.4.0",
+    "stardog": "^4.6.1",
     "stardog-js": "^0.6.2"
   }
 }
